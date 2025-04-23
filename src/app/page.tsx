@@ -86,12 +86,12 @@ export default function Home() {
     }
 
     if (stockLevel < 0) {
-      toast({
-        title: "Valor inválido",
-        description: "O nível de estoque não pode ser negativo.",
-      });
-      return;
-    }
+       toast({
+         title: "Valor inválido",
+         description: "O nível de estoque não pode ser negativo.",
+       });
+       return;
+     }
 
     if (!category) {
       toast({
