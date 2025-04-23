@@ -48,6 +48,36 @@ const categories = [
   },
 ];
 
+function StockInput({ onStockLevelChange }: { onStockLevelChange: (value: number | undefined) => void }) {
+  const [stockLevel, setStockLevel] = useState<number | undefined>(undefined);
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+
+    if (value < 0) {
+      setError('O valor não pode ser negativo!');
+      onStockLevelChange(undefined);
+    } else {
+      setError('');
+      setStockLevel(value);
+      onStockLevelChange(value);
+    }
+  };
+
+  return (
+    <div>
+      <Input
+        type="number"
+        placeholder="Insira o nível de estoque"
+        value={stockLevel === undefined ? '' : stockLevel}
+        onChange={handleChange}
+      />
+      {error && <p className="text-red-500">{error}</p>}
+    </div>
+  );
+}
+
 export default function Home() {
   const [stockLevel, setStockLevel] = useState<number | undefined>(undefined);
   const [barcodeData, setBarcodeData] = useState<string | null>(null);
@@ -188,11 +218,8 @@ export default function Home() {
               </Select>
             )}
 
-            <Input
-              type="number"
-              placeholder="Insira o nível de estoque"
-              onChange={(e) => setStockLevel(Number(e.target.value))}
-            />
+            <StockInput onStockLevelChange={setStockLevel} />
+
             <Button onClick={handleManualStockUpdate} className="w-full bg-teal-500 text-white hover:bg-teal-700">
               Atualizar Estoque
             </Button>
