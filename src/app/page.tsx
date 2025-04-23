@@ -7,10 +7,53 @@ import {Button} from "@/components/ui/button";
 import {scanBarcode} from "@/services/barcode-scanner";
 import {useEffect} from 'react';
 import {toast} from "@/hooks/use-toast";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+
+const categories = [
+  {
+    label: "Bebidas",
+    value: "bebidas",
+    subcategories: [
+      { label: "Água", value: "agua" },
+      { label: "Refrigerante", value: "refrigerante" },
+      { label: "Suco", value: "suco" },
+      {
+        label: "Cerveja",
+        value: "cerveja",
+        subcategories: [
+          { label: "Heineken", value: "heineken" },
+          { label: "Brahma", value: "brahma" },
+          { label: "Skol", value: "skol" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Alimentos",
+    value: "alimentos",
+    subcategories: [
+      { label: "Salgados", value: "salgados" },
+      { label: "Doces", value: "doces" },
+      { label: "Enlatados", value: "enlatados" },
+    ],
+  },
+  {
+    label: "Limpeza",
+    value: "limpeza",
+    subcategories: [
+      { label: "Detergente", value: "detergente" },
+      { label: "Desinfetante", value: "desinfetante" },
+      { label: "Água Sanitária", value: "agua_sanitaria" },
+    ],
+  },
+];
 
 export default function Home() {
   const [stockLevel, setStockLevel] = useState<number | undefined>(undefined);
   const [barcodeData, setBarcodeData] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
+  const [subcategory, setSubcategory] = useState<string | null>(null);
+  const [specificProduct, setSpecificProduct] = useState<string | null>(null);
 
   useEffect(() => {
     if (barcodeData) {
@@ -50,9 +93,35 @@ export default function Home() {
       return;
     }
 
+    if (!category) {
+      toast({
+        title: "Categoria necessária",
+        description: "Por favor, selecione uma categoria.",
+      });
+      return;
+    }
+
+    if (!subcategory) {
+      toast({
+        title: "Subcategoria necessária",
+        description: "Por favor, selecione uma subcategoria.",
+      });
+      return;
+    }
+
+    // if (!specificProduct) {
+    //   toast({
+    //     title: "Produto específico necessário",
+    //     description: "Por favor, especifique o produto.",
+    //   });
+    //   return;
+    // }
+
     toast({
       title: "Estoque atualizado",
-      description: `Nível de estoque definido como: ${stockLevel}`,
+      description: `Nível de estoque definido como: ${stockLevel} para ${
+        specificProduct || subcategory
+      } em ${category}`,
     });
   };
 
@@ -70,6 +139,55 @@ export default function Home() {
             <CardDescription>Atualize os níveis de estoque manualmente.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
+            <Select onValueChange={setCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione a Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={setSubcategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione a Subcategoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories
+                  .find((cat) => cat.value === category)
+                  ?.subcategories?.map((subcat) => (
+                    <SelectItem key={subcat.value} value={subcat.value}>
+                      {subcat.label}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+
+            {categories
+              .find((cat) => cat.value === category)
+              ?.subcategories?.find((subcat) => subcat.value === subcategory)
+              ?.subcategories && (
+              <Select onValueChange={setSpecificProduct}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o Produto Específico" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories
+                    .find((cat) => cat.value === category)
+                    ?.subcategories?.find((subcat) => subcat.value === subcategory)
+                    ?.subcategories?.map((product) => (
+                      <SelectItem key={product.value} value={product.value}>
+                        {product.label}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            )}
+
             <Input
               type="number"
               placeholder="Insira o nível de estoque"
