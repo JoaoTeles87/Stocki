@@ -15,8 +15,8 @@ export default function Home() {
   useEffect(() => {
     if (barcodeData) {
       toast({
-        title: "Barcode Scanned",
-        description: `Value: ${barcodeData}`,
+        title: "Código de barras escaneado",
+        description: `Valor: ${barcodeData}`,
       });
     }
   }, [barcodeData]);
@@ -27,8 +27,8 @@ export default function Home() {
       setBarcodeData(data.rawValue);
     } else {
       toast({
-        title: "Scan Failed",
-        description: "Could not scan barcode.",
+        title: "Falha na leitura",
+        description: "Não foi possível escanear o código de barras.",
       });
     }
   };
@@ -36,53 +36,61 @@ export default function Home() {
   const handleManualStockUpdate = () => {
     if (stockLevel === undefined) {
       toast({
-        title: "Input Needed",
-        description: "Please enter a valid stock level.",
+        title: "Entrada necessária",
+        description: "Por favor, insira um nível de estoque válido.",
+      });
+      return;
+    }
+
+    if (stockLevel < 0) {
+      toast({
+        title: "Valor inválido",
+        description: "O nível de estoque não pode ser negativo.",
       });
       return;
     }
 
     toast({
-      title: "Stock Updated",
-      description: `Stock level set to: ${stockLevel}`,
+      title: "Estoque atualizado",
+      description: `Nível de estoque definido como: ${stockLevel}`,
     });
   };
 
   return (
     <div className="container mx-auto p-4 space-y-4">
       <header className="text-center">
-        <h1 className="text-3xl font-semibold">StockWise Dashboard</h1>
-        <p className="text-muted-foreground">Manage your inventory with ease.</p>
+        <h1 className="text-3xl font-semibold">Painel de Controle StockWise</h1>
+        <p className="text-muted-foreground">Gerencie seu estoque com facilidade.</p>
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Manual Stock Input</CardTitle>
-            <CardDescription>Update stock levels manually.</CardDescription>
+            <CardTitle>Entrada Manual de Estoque</CardTitle>
+            <CardDescription>Atualize os níveis de estoque manualmente.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <Input
               type="number"
-              placeholder="Enter stock level"
+              placeholder="Insira o nível de estoque"
               onChange={(e) => setStockLevel(Number(e.target.value))}
             />
             <Button onClick={handleManualStockUpdate} className="w-full bg-teal-500 text-white hover:bg-teal-700">
-              Update Stock
+              Atualizar Estoque
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Barcode Scanner</CardTitle>
-            <CardDescription>Scan product barcodes to fetch info.</CardDescription>
+            <CardTitle>Leitor de Código de Barras</CardTitle>
+            <CardDescription>Escaneie códigos de barras para buscar informações.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={handleScanBarcode} className="w-full bg-teal-500 text-white hover:bg-teal-700">
-              Scan Barcode
+              Escanear Código de Barras
             </Button>
-            {barcodeData && <p>Scanned Value: {barcodeData}</p>}
+            {barcodeData && <p>Valor Escaneado: {barcodeData}</p>}
           </CardContent>
         </Card>
       </section>
@@ -90,11 +98,11 @@ export default function Home() {
       <section>
         <Card>
           <CardHeader>
-            <CardTitle>Stock Level Overview</CardTitle>
-            <CardDescription>Current stock levels and reorder points.</CardDescription>
+            <CardTitle>Visão Geral do Nível de Estoque</CardTitle>
+            <CardDescription>Níveis de estoque atuais e pontos de reabastecimento.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Implement chart or table here to show stock levels.</p>
+            <p>Implemente um gráfico ou tabela aqui para mostrar os níveis de estoque.</p>
           </CardContent>
         </Card>
       </section>
@@ -102,11 +110,11 @@ export default function Home() {
       <section>
         <Card>
           <CardHeader>
-            <CardTitle>Sales Data</CardTitle>
-            <CardDescription>Recent sales trends and statistics.</CardDescription>
+            <CardTitle>Dados de Vendas</CardTitle>
+            <CardDescription>Tendências e estatísticas de vendas recentes.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Display sales data and trends using charts.</p>
+            <p>Exiba dados de vendas e tendências usando gráficos.</p>
           </CardContent>
         </Card>
       </section>
@@ -114,11 +122,11 @@ export default function Home() {
       <section>
         <Card>
           <CardHeader>
-            <CardTitle>AI-Powered Stock Prediction</CardTitle>
-            <CardDescription>Predict when products will run out of stock.</CardDescription>
+            <CardTitle>Previsão de Estoque com IA</CardTitle>
+            <CardDescription>Preveja quando os produtos vão ficar sem estoque.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Display AI predictions and reorder recommendations.</p>
+            <p>Exiba previsões de IA e recomendações de reabastecimento.</p>
           </CardContent>
         </Card>
       </section>
