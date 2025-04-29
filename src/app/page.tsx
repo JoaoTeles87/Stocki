@@ -1,13 +1,13 @@
 "use client";
 
-import {useState} from 'react';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {scanBarcode} from "@/services/barcode-scanner";
-import {useEffect} from 'react';
-import {toast} from "@/hooks/use-toast";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { scanBarcode } from "@/services/barcode-scanner";
+import { useEffect } from 'react';
+import { toast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const categories = [
   {
@@ -49,19 +49,29 @@ const categories = [
 ];
 
 function StockInput({ onStockLevelChange }: { onStockLevelChange: (value: number | undefined) => void }) {
-  const [stockLevel, setStockLevel] = useState<number | undefined>(undefined);
+  const [stockLevel, setStockLevel] = useState<string>('');
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
+    const value = e.target.value;
 
-    if (value < 0) {
+    // Validate if the input is a number
+    if (!/^\d*$/.test(value)) {
+      setError('Apenas números são permitidos!');
+      onStockLevelChange(undefined);
+      setStockLevel('');
+      return;
+    }
+
+    const numericValue = Number(value);
+
+    if (numericValue < 0) {
       setError('O valor não pode ser negativo!');
       onStockLevelChange(undefined);
     } else {
       setError('');
       setStockLevel(value);
-      onStockLevelChange(value);
+      onStockLevelChange(numericValue);
     }
   };
 
@@ -70,7 +80,7 @@ function StockInput({ onStockLevelChange }: { onStockLevelChange: (value: number
       <Input
         type="number"
         placeholder="Insira o nível de estoque"
-        value={stockLevel === undefined ? '' : stockLevel}
+        value={stockLevel}
         onChange={handleChange}
       />
       {error && <p className="text-red-500">{error}</p>}
@@ -138,14 +148,6 @@ export default function Home() {
       });
       return;
     }
-
-    // if (!specificProduct) {
-    //   toast({
-    //     title: "Produto específico necessário",
-    //     description: "Por favor, especifique o produto.",
-    //   });
-    //   return;
-    // }
 
     toast({
       title: "Estoque atualizado",
